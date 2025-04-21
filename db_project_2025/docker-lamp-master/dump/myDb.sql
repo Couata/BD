@@ -98,7 +98,8 @@ CREATE TABLE `users` (
 --
 INSERT INTO `users` (`Login`, `Pass`)
 VALUES ('Pierre', 'incorrect'),
-  ('Sam', 'motdepasse');
+  ('Sam', 'motdepasse'),
+  ('group7', 'agent007');
 --
 -- Indexen voor geëxporteerde tabellen
 --
