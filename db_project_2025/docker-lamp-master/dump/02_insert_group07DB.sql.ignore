@@ -1,2 +1,55 @@
 USE group07DB;
 
+/* Script to load all files into the group07DB */
+
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/csv_files/AGENCE.csv'
+INTO TABLE AGENCE
+FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+IGNORE 1 ROWS;
+
+
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/csv_files/ARRET_DESSERVI.csv'
+INTO TABLE ARRET_DESSERVI
+FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+IGNORE 1 ROWS;
+
+
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/csv_files/ARRET.csv'
+INTO TABLE ARRET
+FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+IGNORE 1 ROWS;
+
+
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/csv_files/EXCEPTION.csv'
+INTO TABLE EXCEPTION
+FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+IGNORE 1 ROWS;
+
+
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/csv_files/HORRAIRE.csv'
+INTO TABLE HORRAIRE
+FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+IGNORE 1 ROWS;
+
+
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/csv_files/ITINERAIRE.csv'
+INTO TABLE ITINERAIRE
+FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+IGNORE 1 ROWS;
+
+
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/csv_files/LANGUEPRINCIPALE.csv'
+INTO TABLE LANGUEPRINCIPALE
+FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/csv_files/SERVICE.csv'
+INTO TABLE SERVICE
+FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+IGNORE 1 ROWS;
+
+
+LOAD DATA INFILE '/docker-entrypoint-initdb.d/csv_files/TRAJET.csv'
+INTO TABLE TRAJET
+FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+IGNORE 1 ROWS;
