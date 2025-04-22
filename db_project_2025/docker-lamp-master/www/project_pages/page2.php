@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html>
+    <?php
+   include '../db_connection.php';
+    ?>
     <head>
         <title>Page2</title>
     </head>
