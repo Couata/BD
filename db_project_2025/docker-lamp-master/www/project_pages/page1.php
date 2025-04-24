@@ -237,7 +237,7 @@
                         FROM EXCEPTION
                         JOIN SERVICE ON EXCEPTION.SERVICE_ID = SERVICE.ID
                         JOIN TRAJET ON EXCEPTION.SERVICE_ID = TRAJET.SERVICE_ID
-                        JOIN ITINERAIRE ON TRAJET.ITINERAIRE_ID = ITINERAIRE.ID
+                        JOIN ITINERAIRE ON TRAJET.ITINERAIRE_ID = ITINERAIRE.ID     
                         WHERE DATE_DEBUT <= :value AND DATE_FIN >= :value";
             
                 // Préparer la requête SQL
