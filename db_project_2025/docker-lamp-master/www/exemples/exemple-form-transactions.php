@@ -21,6 +21,15 @@
             <th>DNAME</th>
         </tr>
 
+    <?php
+        $bdd = new PDO('mysql:host=db;dbname=group7;charset=utf8', 'group7', 'agent007');
+    
+        $req = $bdd->query('SELECT DNO, DNAME FROM department');
+        while ($tuple = $req->fetch()) {
+            echo "<tr><td>" . $tuple['DNO'] . "</td><td>" . $tuple['DNAME'] . "</td></tr>";
+        }
+    ?>
+
     </table>
 
     <?php
