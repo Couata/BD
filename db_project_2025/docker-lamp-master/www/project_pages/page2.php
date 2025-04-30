@@ -4,18 +4,10 @@
    include '../db_connection.php';
     ?>
     <head>
-<<<<<<< HEAD
-        <title>Page2</title>
-        <link rel="stylesheet" type="text/css" href="../css/pages_style.css">
-    </head>
-    <body>
-        <h1>Page 2: Formulaire: Interaction avec Table SERVICE</h1>
-=======
         <title>BD Project - Question 2</title>
     </head>
     <body>
         <h1>Insertion de nouveau service</h1>
->>>>>>> 5b0f89c0c99a5e93c31133e05bb8b97405353428
         <!-- Insertion de code PHP -->
         <form method="post"> 
 
