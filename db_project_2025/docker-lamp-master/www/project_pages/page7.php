@@ -56,6 +56,6 @@
             <input type="submit" value="Mettre à jour">
         </form>
         <?php endif; ?>
-
+    <script src="../js/pages_script.js"></script>        
     </body>
 </html>
