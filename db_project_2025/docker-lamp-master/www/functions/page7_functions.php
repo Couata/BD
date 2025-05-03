@@ -5,21 +5,20 @@ function isInBelgium($lat, $lon) {
            $lat >= 49.5294835476 && $lat <= 51.4750237087;
 }
 
-
-function getAllArrets($db){
-    return $db->query("SELECT * FROM ARRET")->fetchAll();
+function getAllBelgianArrets($db){
+    $query = "SELECT * FROM ARRET WHERE LATITUDE BETWEEN 49.5294835476 AND 51.4750237087 AND LONGITUDE BETWEEN 2.51357303225 AND 6.15665815596";
+    return $db->query($query)->fetchAll();
 }
 
 function getArretWithID($db, $selectedID){
     if(!$selectedID)
         return null;
 
-    return $db-> query("SELECT * FROM ARRET WHERE ID = $selectedID")->fetch();
+    return $db->query("SELECT * FROM ARRET WHERE ID = $selectedID")->fetch();
 }
 
 function getSelectedArret($db){
-
-    if(isset($_GET['id'])&& $_GET['id'] != ""){
+    if(isset($_GET['id']) && $_GET['id'] != ""){
         $selectedID = $_GET['id'];
         return getArretWithID($db, $selectedID);
     }
@@ -31,7 +30,7 @@ function updatePOSTmethod($db){
         return "";
     }
 
-    if (!isset($_POST['new_id'], $_POST['nom'], $_POST['lat'], $_POST['lon']) || 
+    if (!isset($_POST['new_id'], $_POST['nom'], $_POST['lat'], $_POST['lon']) ||
         $_POST['new_id'] === "" || $_POST['nom'] === "" || $_POST['lat'] === "" || $_POST['lon'] === "") {
         return "Sélectionnez une valeur pour tous les champs.";
     }
@@ -40,48 +39,73 @@ function updatePOSTmethod($db){
     $nom = $_POST['nom'];
     $lat = $_POST['lat'];
     $lon = $_POST['lon'];
+    $currentID = $_GET['id'];
 
-    $sameValuesMessage = checkSameValues($db, $newID, $nom, $lat, $lon);
-    if ($sameValuesMessage) {
-        return $sameValuesMessage;
+    if (!isInBelgium($lat, $lon)) {
+        return "Les coordonnées doivent être en Belgique.";
     }
 
-    $stmt = update($db, $nom, $lat, $lon, $newID);
+    $selected = getArretWithID($db, $currentID);
 
-    if ($stmt->rowCount() > 0) {
+    if (!$selected) {
+        return "L'arrêt sélectionné n'existe pas.";
+    }
+
+    try {
+        $db->beginTransaction();
+        $oldID = $currentID;
+        if ($newID != $currentID) {
+            if (checkNewID($db, $newID)) {
+                return "L'ID $newID est déjà utilisé.";
+            }
+            #update ID in the tables first
+            $prep = $db->prepare("UPDATE ARRET SET ID = ? WHERE ID = ?");
+            $prep->execute([$newID, $currentID]);
+
+            $prep = $db->prepare("UPDATE ARRET_DESSERVI SET ARRET_ID = ? WHERE ARRET_ID = ?");
+            $prep->execute([$newID, $currentID]);
+
+            $currentID = $newID; 
+        }
+
+        if(checkSameValues($db,$oldID, $currentID, $nom, $lat, $lon))
+            return "Aucune modification n'a été effectuée.";
+
+        #update other values / overwrites them
+        $prep = $db->prepare("UPDATE ARRET SET NOM = ?, LATITUDE = ?, LONGITUDE = ? WHERE ID = ?");
+        $prep->execute([$nom, $lat, $lon, $currentID]);
+
+  
+        $db->commit();
+
+
+
         return "L'arrêt a été mis à jour avec succès.";
+    } catch (PDOException $e) {
+        $db->rollBack();
+        return "Erreur lors de la mise à jour de l'arrêt: " . $e->getMessage();
     }
-
-    return "Aucune modification n'a été effectuée.";
 }
 
 
-function update($db, $nom, $lat, $lon, $id){
-
-    $stmt = $db->prepare("UPDATE ARRET SET NOM = ?, LATITUDE = ?, LONGITUDE = ? WHERE ID = ?");
-    $stmt->execute([$nom, $lat, $lon, $id]);
-
-    return $stmt;
+function checkNewID($db, $id){
+ 
+    $prep = $db->prepare("SELECT COUNT(*) FROM ARRET WHERE ID = ?");
+    $prep->execute([$id]);
+    return $prep->fetchColumn() > 0; #checks if the ID exist in the table since ID Int > 0
+    
 }
 
-function checkSameValues($db, $id, $nom, $lat, $lon) {
+function checkSameValues($db, $oldID ,$id, $nom, $lat, $lon) {
     $selected = getArretWithID($db, $id);
 
     if (!$selected) {
         return false;
     }
 
-    if ($selected['ID'] == $id) {
-        return "L'ID reste le même.";
+    if ($selected['NOM'] == $nom && $selected['LATITUDE'] == $lat && $selected['LONGITUDE'] == $lon && $oldID == $id) {
+        return true;
     }
 
-    if ($selected['NOM'] == $nom) {
-        return "Le nom de l'arrêt reste le même.";
-    }
-
-    if ($selected['LATITUDE'] == $lat && $selected['LONGITUDE'] == $lon) {
-        return "Les coordonnées restent les mêmes.";
-    }
-
-    return false; 
+    return false;
 }

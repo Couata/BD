@@ -1,6 +1,6 @@
 <?php
 $host = 'db';
-$dbname = 'group7'; // or 'group07DB' if that's what you're actually using
+$dbname = 'group7';
 $username = 'group7';
 $password = 'agent007';
 $charset = 'utf8';
@@ -13,10 +13,20 @@ $options = [
     PDO::ATTR_EMULATE_PREPARES => false,
 ];
 
-try {
-    $pdo = new PDO($dsn, $username, $password, $options);
-} catch (PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
-    exit();
+$maxRetries = 10;
+$retryCount = 0;
+
+while ($retryCount < $maxRetries) {
+    try {
+        $pdo = new PDO($dsn, $username, $password, $options);
+        break; 
+    } catch (PDOException $e) {
+        $retryCount++;
+        if ($retryCount >= $maxRetries) {
+            echo "Connection failed after $maxRetries attempts: " . $e->getMessage();
+            exit();
+        }
+        sleep(2); 
+    }
 }
 ?>
