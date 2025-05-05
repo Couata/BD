@@ -25,10 +25,13 @@ if ($message) {
 <html>
 <head>
     <title>Page 7</title>
-    <link rel="stylesheet" type="text/css" href="../css/page7_style.css">
+    <link rel="stylesheet" type="text/css" href="../css/pages_style.css">
 </head>
 <body>
     <h1>BD Projet - Question 7</h1>
+    <a href="../index.html">
+            <div class="subbox">Revenir à l'acceuil</div>
+    </a>
 
     <?php if (isset($_SESSION['message'])): ?>
         <div id="message"><?= $_SESSION['message'] ?></div>

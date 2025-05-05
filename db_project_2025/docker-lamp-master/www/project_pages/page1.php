@@ -6,6 +6,7 @@
     ?>
     <head>
         <title>Page1</title>
+        <link rel="stylesheet" type="text/css" href="../css/pages_style.css">
     </head>
     <body>
         <h1>Recherche sur l'agence, horaire et recherche exception</h1>

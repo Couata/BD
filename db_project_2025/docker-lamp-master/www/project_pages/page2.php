@@ -5,6 +5,7 @@
     ?>
     <head>
         <title>BD Project - Question 2</title>
+        <link rel="stylesheet" type="text/css" href="../css/pages_style.css">
     </head>
     <body>
         <h1>Insertion de nouveau service</h1>

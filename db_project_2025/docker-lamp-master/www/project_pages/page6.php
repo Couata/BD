@@ -58,10 +58,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['save_trajet'])) {
 <html>
 <head>
     <title>Page6</title>
-    <link rel="stylesheet" type="text/css" href="../css/page6_style.css">
+    <link rel="stylesheet" type="text/css" href="../css/pages_style.css">
 </head>
 <body>
     <h1>BD Projet - Question 6</h1>
+    <a href="../index.html">
+            <div class="subbox">Revenir à l'acceuil</div>
+    </a>
 
     <!-- Display the message if set in session -->
     <?php
