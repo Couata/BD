@@ -8,6 +8,9 @@
     </head>
     <body>
         <h1>Insertion de nouveau service</h1>
+        <a href="../index.html">
+            <div class="subbox">Revenir à l'acceuil</div>
+        </a>
         <!-- Insertion de code PHP -->
         <form method="post"> 
 
@@ -95,6 +98,8 @@
             $vendredi = in_array('Vendredi', $jours) ? 1 : 0;
             $samedi = in_array('Samedi', $jours) ? 1 : 0;
             $dimanche = in_array('Dimanche', $jours) ? 1 : 0;
+
+            
         } else{
             $service_valide = false;
             echo "Il est nécessaire de coché au moins un jour <br>";
@@ -109,11 +114,12 @@
         echo "</ul>";
 
         if($service_valide){
+            /*
+            
             $sql = "INSERT INTO SERVICE (NOM, LUNDI, MARDI, MERCREDI, JEUDI, VENDREDI, SAMEDI, DIMANCHE, DATE_DEBUT, DATE_FIN)
             VALUES (:nom, :lundi, :mardi, :mercredi, :jeudi, :vendredi, :samedi, :dimanche, :date_debut, :date_fin)";
 
             $stmt = $pdo->prepare($sql);
-            /*
             $stmt->execute([
                 ':nom' => $nom_service,
                 ':lundi' => $lundi,
@@ -127,6 +133,21 @@
                 ':date_fin' => $date_fin
             ]);
             */
+
+                $sql = "SELECT MAX(ID) AS ID
+                        FROM SERVICE";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute();
+                $result = $stmt->fetchAll();
+                $lastId = $lastRow['ID']; // Récupère l'ID
+                
+                if(is_int($lastId))
+                    echo "TRUE";
+                else{
+                    echo "FALSE";
+                }
+                var_dump($result);
+
         }
 
         // -----------------------------------------------------
