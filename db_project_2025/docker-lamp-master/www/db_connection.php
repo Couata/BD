@@ -13,7 +13,7 @@ $options = [
     PDO::ATTR_EMULATE_PREPARES => false,
 ];
 
-$maxRetries = 10;
+$maxRetries = 20;
 $retryCount = 0;
 
 while ($retryCount < $maxRetries) {

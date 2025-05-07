@@ -1,22 +1,21 @@
 <?php
-
-function isInBelgium($lat, $lon) {
-    return $lon >= 2.51357303225 && $lon <= 6.15665815596 &&
-           $lat >= 49.5294835476 && $lat <= 51.4750237087;
+// function to get all Belgian Arrets
+function getAllBelgianArrets($db) {
+    $prep = $db->query("SELECT * FROM view_arrets_belges");
+    return $prep->fetchAll();
 }
 
-function getAllBelgianArrets($db){
-    $query = "SELECT * FROM ARRET WHERE LATITUDE BETWEEN 49.5294835476 AND 51.4750237087 AND LONGITUDE BETWEEN 2.51357303225 AND 6.15665815596";
-    return $db->query($query)->fetchAll();
-}
-
+//fucntion to get Arret of a specific ID
 function getArretWithID($db, $selectedID){
     if(!$selectedID)
         return null;
 
-    return $db->query("SELECT * FROM ARRET WHERE ID = $selectedID")->fetch();
+    $prep = $db->prepare("SELECT * FROM ARRET WHERE ID = ?");
+    $prep->execute([$selectedID]);
+    return $prep->fetch();
 }
 
+//function to get all arrets
 function getSelectedArret($db){
     if(isset($_GET['id']) && $_GET['id'] != ""){
         $selectedID = $_GET['id'];
@@ -25,6 +24,8 @@ function getSelectedArret($db){
     return null;
 }
 
+//function which listens to post request and updates the page.
+//handles UPDATE requests -> dependencies are handled by triggers
 function updatePOSTmethod($db){
     if ($_SERVER['REQUEST_METHOD'] != 'POST') {
         return "";
@@ -41,10 +42,6 @@ function updatePOSTmethod($db){
     $lon = $_POST['lon'];
     $currentID = $_GET['id'];
 
-    if (!isInBelgium($lat, $lon)) {
-        return "Les coordonnées doivent être en Belgique.";
-    }
-
     $selected = getArretWithID($db, $currentID);
 
     if (!$selected) {
@@ -53,16 +50,14 @@ function updatePOSTmethod($db){
 
     try {
         $db->beginTransaction();
+
         $oldID = $currentID;
         if ($newID != $currentID) {
             if (checkNewID($db, $newID)) {
                 return "L'ID $newID est déjà utilisé.";
             }
-            #update ID in the tables first
-            $prep = $db->prepare("UPDATE ARRET SET ID = ? WHERE ID = ?");
-            $prep->execute([$newID, $currentID]);
 
-            $prep = $db->prepare("UPDATE ARRET_DESSERVI SET ARRET_ID = ? WHERE ARRET_ID = ?");
+            $prep = $db->prepare("UPDATE ARRET SET ID = ? WHERE ID = ?");
             $prep->execute([$newID, $currentID]);
 
             $currentID = $newID; 
@@ -71,31 +66,33 @@ function updatePOSTmethod($db){
         if(checkSameValues($db,$oldID, $currentID, $nom, $lat, $lon))
             return "Aucune modification n'a été effectuée.";
 
-        #update other values / overwrites them
+
         $prep = $db->prepare("UPDATE ARRET SET NOM = ?, LATITUDE = ?, LONGITUDE = ? WHERE ID = ?");
         $prep->execute([$nom, $lat, $lon, $currentID]);
 
-  
         $db->commit();
-
-
 
         return "L'arrêt a été mis à jour avec succès.";
     } catch (PDOException $e) {
         $db->rollBack();
+        
+
+        if ($e->getCode() == '45000') {
+            return $e->getMessage(); // This will be the error message from the SIGNAL in the trigger
+        }
+
         return "Erreur lors de la mise à jour de l'arrêt: " . $e->getMessage();
     }
 }
 
-
+//check if the newID does not already exist
 function checkNewID($db, $id){
- 
     $prep = $db->prepare("SELECT COUNT(*) FROM ARRET WHERE ID = ?");
     $prep->execute([$id]);
-    return $prep->fetchColumn() > 0; #checks if the ID exist in the table since ID Int > 0
-    
+    return $prep->fetchColumn() > 0; // Check if the ID already exists by counting if it occurs more then 0 times in the table
 }
 
+//check if some values have changed or not
 function checkSameValues($db, $oldID ,$id, $nom, $lat, $lon) {
     $selected = getArretWithID($db, $id);
 
@@ -109,3 +106,5 @@ function checkSameValues($db, $oldID ,$id, $nom, $lat, $lon) {
 
     return false;
 }
+
+?>

@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['save_trajet'])) {
         $service_id = 1; // Hardcoded for now
         $stops = getArrets($db, $itineraire_id);
 
-        // Insert trajet
+
         if (!insertTrajet($db, $trajet_id, $service_id, $itineraire_id, $direction)) {
             $_SESSION['message'] = "<p style='color:red;'>Erreur lors de l'insertion du trajet. Vérifier que tout les espaces sont remplies</p>";
         } else {
@@ -70,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['save_trajet'])) {
     <?php
     if (isset($_SESSION['message'])) {
         echo "<div id='message'>{$_SESSION['message']}</div>";
-        unset($_SESSION['message']); // Clear the message after displaying it
+        unset($_SESSION['message']); 
     }
     ?>
 
