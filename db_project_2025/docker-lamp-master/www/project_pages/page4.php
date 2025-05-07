@@ -2,7 +2,7 @@
 <html>
     <?php
     include '../db_connection.php';
-    include '../functions/page4functions.php';
+    include '../functions/page4_functions.php';
     ?>
     <head>
         <title>Page4</title>
