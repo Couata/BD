@@ -1,9 +1,11 @@
 <?php
 // function to get all Belgian Arrets
-function getAllBelgianArrets($db) {
-    $prep = $db->query("SELECT * FROM view_arrets_belges");
+function getAllBelgianArrets($db){
+    $prep = $db->prepare("SELECT * FROM ARRET WHERE LATITUDE BETWEEN ? AND ? AND LONGITUDE BETWEEN ? AND ?");
+    $prep->execute([49.5294835476, 51.4750237087, 2.51357303225, 6.15665815596]);
     return $prep->fetchAll();
 }
+
 
 //fucntion to get Arret of a specific ID
 function getArretWithID($db, $selectedID){

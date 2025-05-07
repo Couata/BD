@@ -86,7 +86,13 @@ function getAllItineraires($db) {
 
 // Function to fetch all stops for a specific itinerary
 function getArrets($db, $itineraire_id) {
-    $prep = $db->prepare("SELECT ARRET_ID AS ID, ARRET_NOM AS NOM FROM view_arrets_par_itineraire WHERE ITINERAIRE_ID = ? ORDER BY SEQUENCE");
+    $prep = $db->prepare("
+        SELECT ART.ID, ART.NOM
+        FROM ARRET ART
+        JOIN ARRET_DESSERVI AD ON ART.ID = AD.ARRET_ID
+        WHERE AD.ITINERAIRE_ID = ?
+        ORDER BY AD.SEQUENCE
+    ");
     $prep->execute([$itineraire_id]);
     return $prep->fetchAll(PDO::FETCH_ASSOC);
 }

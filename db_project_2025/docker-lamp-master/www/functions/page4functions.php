@@ -1,6 +1,5 @@
 <?php
 function getAllTrajetAvgStopTime($db){
-    function getAllTrajetAvgStopTime($db){
     $prep= $db->prepare(
         "SELECT NOM,TRAJET_ID,AVG_TIME_STOP
         FROM(SELECT ITINERAIRE_ID,TRAJET_ID,AVG(TIME_TO_SEC(HEURE_DEPART)-TIME_TO_SEC(HEURE_ARRIVEE)) as AVG_TIME_STOP 
