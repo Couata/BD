@@ -1,7 +1,8 @@
-USE group7
+USE group7;
 
-DELIMITER$$
+DELIMITER $$
 
+-- Trigger: Check coordinates are in Belgium
 CREATE TRIGGER check_coords_belgium_update
 BEFORE UPDATE ON ARRET
 FOR EACH ROW
@@ -13,6 +14,7 @@ BEGIN
     END IF;
 END$$
 
+-- Trigger: Update dependent tables if ARRET ID changes
 CREATE TRIGGER update_arret_id_dependencies
 AFTER UPDATE ON ARRET
 FOR EACH ROW
@@ -23,16 +25,18 @@ BEGIN
     END IF;
 END$$
 
+-- Trigger: Ensure arrival time is after departure
 CREATE TRIGGER check_arrival_before_departure
 BEFORE INSERT ON HORAIRE
 FOR EACH ROW
 BEGIN
     IF NEW.HEURE_ARRIVEE <= NEW.HEURE_DEPART THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'arrivée doit être avant le départ.';
+        SET MESSAGE_TEXT = 'arrivée doit être après le départ.';
     END IF;
 END$$
 
+-- Trigger: Prevent deletion if it would leave <2 stops
 CREATE TRIGGER prevent_less_than_two_arrets
 BEFORE DELETE ON ARRET_DESSERVI
 FOR EACH ROW

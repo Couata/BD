@@ -1,6 +1,6 @@
-USE group7
+USE group7;
 
-
+-- View for horaires
 CREATE OR REPLACE VIEW view_horaires_details AS
 SELECT 
     h.HEURE_ARRIVEE,
@@ -17,8 +17,7 @@ JOIN ITINERAIRE i ON t.ITINERAIRE_ID = i.ID
 JOIN AGENCE ag ON i.AGENCE_ID = ag.ID
 JOIN SERVICE s ON t.SERVICE_ID = s.ID;
 
-
-
+-- View for exceptions
 CREATE OR REPLACE VIEW view_exceptions_details AS
 SELECT 
     ej.CODE,
@@ -31,6 +30,8 @@ JOIN SERVICE s ON ej.SERVICE_ID = s.ID
 JOIN TRAJET t ON s.ID = t.SERVICE_ID
 JOIN ITINERAIRE i ON t.ITINERAIRE_ID = i.ID;
 
+-- View for expanded services per date
+CREATE OR REPLACE VIEW dates_services AS
 WITH RECURSIVE dates_services_temp AS (
     SELECT s.ID AS service_id, s.NOM AS nom_service, s.DATE_DEBUT AS date_actuelle, s.DATE_FIN AS date_fin
     FROM SERVICE s
@@ -39,10 +40,6 @@ WITH RECURSIVE dates_services_temp AS (
     FROM dates_services_temp dst
     WHERE dst.date_actuelle < dst.date_fin
 )
-
-
-
-CREATE OR REPLACE VIEW dates_services AS
 SELECT dst.service_id, dst.nom_service, dst.date_actuelle
 FROM dates_services_temp dst
 JOIN SERVICE s ON s.ID = dst.service_id
@@ -55,15 +52,15 @@ WHERE
     (DAYOFWEEK(dst.date_actuelle) = 6 AND s.VENDREDI = 1) OR
     (DAYOFWEEK(dst.date_actuelle) = 7 AND s.SAMEDI = 1);
 
+
+-- View for valid services considering exceptions
 CREATE OR REPLACE VIEW dates_services_exception AS
 SELECT ds.date_actuelle, ds.nom_service
 FROM dates_services ds
 LEFT JOIN EXCEPTION_JOUR e ON ds.service_id = e.SERVICE_ID AND ds.date_actuelle = e.DATE_EXCEPTION
 WHERE (e.CODE IS NULL OR e.CODE = 1) AND NOT (e.CODE = 2);
 
-
-
-
+-- Final view: grouped services per date
 CREATE OR REPLACE VIEW services_par_date_final AS
 SELECT 
     ds.date_actuelle AS date_service,
