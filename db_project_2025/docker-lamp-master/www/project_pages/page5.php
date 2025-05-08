@@ -8,11 +8,12 @@
         <title>Page5</title>
         <link rel="stylesheet" type="text/css" href="../css/pages_style.css">
     </head>
-    <a href="../index.html">
-            <div class="subbox">Revenir à l'acceuil</div>
-    </a>
+
     <body>
         <h1>Page 5: Formulaire: Recherches noms de gares</h1>
+        <a href="../index.html">
+            <div class="subbox">Revenir à l'acceuil</div>
+        </a>
         <form method="post" action="page5.php">
         <input type="text" name="gare" placeholder="Insérer (partie de) nom de gare" required>
         <input type="number" name="min_arret" min="0" placeholder="Minimum d'arrêts">
