@@ -32,7 +32,7 @@
         </div>
 
         <h2> Recherche Horaire</h2>
-        <div style="display: flex; gap: 20px; align: flex-end;">
+        <div style="display: flex; gap: 20px; align-items: flex-end;">
             <li> 
                 <form method="get">
                     <label for="nom">Nom arret: </label>

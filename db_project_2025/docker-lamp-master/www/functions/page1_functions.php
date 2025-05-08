@@ -74,11 +74,17 @@ function getDataException($pdo, $research, $key) {
         echo "<li>Pas de résultats trouvés</li>";
     } else {
         foreach ($result as $row) {
-            $text = match ($row['CODE']) {
-                1 => "Le service est ajouté",
-                2 => "Le service est supprimé",
-                default => "Erreur : code inconnu"
+            switch ($row['CODE']) {
+                case 1:
+                    $text = "Le service est ajouté";
+                    break;
+                case 2:
+                    $text = "Le service est supprimé";
+                    break;
+                default:
+                    $text = "Erreur : code inconnu";
             };
+            
             echo "<li>$text pour les {$row['NOM_ITINERAIRE']} pendant les {$row['NOM_SERVICE']} : du {$row['DATE_DEBUT']} au {$row['DATE_FIN']}</li>";
         }
     }
@@ -106,11 +112,17 @@ function getDataExceptionDate($pdo, $research, $key) {
         echo "<li>Pas de résultats trouvés</li>";
     } else {
         foreach ($result as $row) {
-            $text = match ($row['CODE']) {
-                1 => "Le service est ajouté",
-                2 => "Le service est supprimé",
-                default => "Erreur : code inconnu"
+            switch ($row['CODE']) {
+                case 1:
+                    $text = "Le service est ajouté";
+                    break;
+                case 2:
+                    $text = "Le service est supprimé";
+                    break;
+                default:
+                    $text = "Erreur : code inconnu";
             };
+            
             echo "<li>$text pour les {$row['NOM_ITINERAIRE']} pendant les {$row['NOM_SERVICE']} : (du {$row['DATE_DEBUT']} au {$row['DATE_FIN']})</li>";
         }
     }
