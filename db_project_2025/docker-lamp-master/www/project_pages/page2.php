@@ -60,13 +60,6 @@
             echo $exception_valide ? "<ul> vrai</ul>" : "<ul> Une des exceptions est fausse</ul>";
 
             if ($service_valide) {
-                // Hypothetical insertion into DB (commented out)
-                /*
-                $sql = "INSERT INTO SERVICE (NOM, LUNDI, MARDI, MERCREDI, JEUDI, VENDREDI, SAMEDI, DIMANCHE, DATE_DEBUT, DATE_FIN)
-                        VALUES (:nom, :lundi, :mardi, :mercredi, :jeudi, :vendredi, :samedi, :dimanche, :date_debut, :date_fin)";
-                $stmt = $pdo->prepare($sql);
-                $stmt->execute([...]);
-                */
 
                 $lastId = get_last_service_id($pdo);
                 if (is_int($lastId)) {

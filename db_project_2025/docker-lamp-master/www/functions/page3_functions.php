@@ -1,5 +1,6 @@
 <?php
 
+//check if the dates are logical 
 function validate_date_range($start, $end) {
     if ($end < $start) {
         echo "<div id='message'> La date de fin doit être après la date de début</div>";
@@ -8,6 +9,7 @@ function validate_date_range($start, $end) {
     return true;
 }
 
+//get the services by the date range
 function get_services_by_date_range($pdo, $start, $end) {
     $query = "SELECT * FROM services_par_date_final WHERE date_service BETWEEN :date_debut AND :date_fin";
     $stmt = $pdo->prepare($query);

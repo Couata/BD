@@ -1,5 +1,5 @@
-<?php
 
+<?php
 // Function to delete an itinerary
 function deleteItineraire($db, $itineraire_id) {
     try {
@@ -18,73 +18,59 @@ function deleteItineraire($db, $itineraire_id) {
 // Function to insert a new trajet
 function insertTrajet($db, $trajet_id, $service_id, $itineraire_id, $direction) {
     if (empty($trajet_id) || empty($service_id) || empty($itineraire_id) || $direction === "") {
-        return false; 
+        return false;
     }
 
     try {
         $db->beginTransaction();
-
-        // Insert trajet into the database
         $prep = $db->prepare("INSERT INTO TRAJET (TRAJET_ID, SERVICE_ID, ITINERAIRE_ID, DIRECTION) 
                               VALUES (?, ?, ?, ?)");
         $prep->execute([$trajet_id, $service_id, $itineraire_id, $direction]);
-
         $db->commit();
         return true;
     } catch (PDOException $e) {
         $db->rollBack();
-
-        if (strpos($e->getMessage(), 'Le ID du trajet doit être unique') !== false) {
-            $_SESSION['message'] = "<p style='color:red;'>Erreur: " . $e->getMessage() . "</p>";
-        } else {
-            $_SESSION['message'] = "<p style='color:red;'>Erreur lors de l'insertion du trajet: " . $e->getMessage() . "</p>";
-        }
+        $_SESSION['message'] = "<p style='color:red;'>Erreur lors de l'insertion du trajet: " . $e->getMessage() . "</p>";
         return false;
     }
 }
 
-// Function to insert horaire for each stop
+// Function to insert horaire for a stop
 function insertHoraire($db, $trajet_id, $itineraire_id, $arret_id, $arrivee, $depart) {
     try {
         $db->beginTransaction();
         $prep = $db->prepare("INSERT INTO HORRAIRE (TRAJET_ID, ITINERAIRE_ID, ARRET_ID, HEURE_ARRIVEE, HEURE_DEPART)
                               VALUES (?, ?, ?, ?, ?)");
         $prep->execute([$trajet_id, $itineraire_id, $arret_id, $arrivee, $depart]);
-
         $db->commit();
         return true;
     } catch (PDOException $e) {
         $db->rollBack();
-
-        if (strpos($e->getMessage(), 'arrivée doit être avant le départ') !== false) {
-            $_SESSION['message'] = "<p style='color:red;'>Erreur: " . $e->getMessage() . "</p>";
-        } else {
-            $_SESSION['message'] = "<p style='color:red;'>Erreur lors de l'insertion de l'horaire: " . $e->getMessage() . "</p>";
-        }
+        $_SESSION['message'] = "<p style='color:red;'>Erreur lors de l'insertion de l'horaire: " . $e->getMessage() . "</p>";
         return false;
     }
 }
 
-// Function to generate unique trajet ID
+// Function to generate a unique trajet ID
 function generateUniqueTrajetId($db) {
     while (true) {
-        $id = uniqid('trajet_'); 
+        $id = uniqid('trajet_');
         $prep = $db->prepare("SELECT 1 FROM TRAJET WHERE TRAJET_ID = ? LIMIT 1");
         $prep->execute([$id]);
         if (!$prep->fetch()) {
-            return $id; 
+            return $id;
         }
     }
 }
 
-// Function to fetch all itineraries
+// Get all itineraries
 function getAllItineraires($db) {
     $prep = $db->prepare("SELECT ID, NOM FROM ITINERAIRE ORDER BY NOM");
     $prep->execute();
     return $prep->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// Function to fetch all stops for a specific itinerary
+// Get all stops for an itinerary
 function getArrets($db, $itineraire_id) {
     $prep = $db->prepare("
         SELECT ART.ID, ART.NOM
@@ -96,5 +82,3 @@ function getArrets($db, $itineraire_id) {
     $prep->execute([$itineraire_id]);
     return $prep->fetchAll(PDO::FETCH_ASSOC);
 }
-
-?>

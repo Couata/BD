@@ -1,5 +1,5 @@
 <?php
-
+//display on post request
 function display_post_data($post) {
     echo "<ul>";
     if(isset($post['nom_service'])){
@@ -24,6 +24,7 @@ function display_post_data($post) {
     echo '</ul>';
 }
 
+//check which days are considered and which not
 function get_day_flags($jours) {
     return [
         'lundi' => in_array('Lundi', $jours) ? 1 : 0,
@@ -36,6 +37,7 @@ function get_day_flags($jours) {
     ];
 }
 
+//check if the dates are logic
 function validate_dates($date_debut, $date_fin) {
     $valid = true;
     $today = date("Y-m-d");
@@ -51,6 +53,8 @@ function validate_dates($date_debut, $date_fin) {
     return $valid;
 }
 
+
+//parse data 
 function parse_exceptions($text) {
     $lines = explode("\n", $text);
     $parsed_exceptions = [];
@@ -76,6 +80,7 @@ function parse_exceptions($text) {
     return [$parsed_exceptions, $valid];
 }
 
+//get the id of the last service
 function get_last_service_id($pdo) {
     $sql = "SELECT MAX(ID) AS ID FROM SERVICE";
     $stmt = $pdo->prepare($sql);

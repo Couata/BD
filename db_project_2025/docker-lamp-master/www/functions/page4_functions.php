@@ -1,4 +1,5 @@
 <?php
+//get the average stop time
 function getAllTrajetAvgStopTime($db){
     $prep= $db->prepare(
         "SELECT NOM,TRAJET_ID,AVG_TIME_STOP

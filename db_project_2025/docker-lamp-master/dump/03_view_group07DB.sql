@@ -58,7 +58,7 @@ CREATE OR REPLACE VIEW dates_services_exception AS
 SELECT ds.date_actuelle, ds.nom_service
 FROM dates_services ds
 LEFT JOIN EXCEPTION_JOUR e ON ds.service_id = e.SERVICE_ID AND ds.date_actuelle = e.DATE_EXCEPTION
-WHERE (e.CODE IS NULL OR e.CODE = 1) AND NOT (e.CODE = 2);
+WHERE (e.CODE != 2 OR e.CODE IS NULL);
 
 -- Final view: grouped services per date
 CREATE OR REPLACE VIEW services_par_date_final AS

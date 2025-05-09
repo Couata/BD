@@ -1,4 +1,5 @@
 <?php
+// get Arrets with a min number of stops
 function getArretsWith($db,$gare,$min_stop){
     $prep= $db->prepare(
         "SELECT ARRET.NOM as NOM_ARRET, SERVICE.NOM as NOM_SERVICE, COUNT(TRAJET_ID) as NB_STOP
