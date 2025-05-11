@@ -1,90 +1,76 @@
 <?php
-//display on post request
-function display_post_data($post) {
-    echo "<ul>";
-    if(isset($post['nom_service'])){
-        echo "{$post['nom_service']} <br>";
-    }
+function send_service($db){
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    if(isset($post['exception_service'])){
-        $lines = explode("\n", $post['exception_service']);
-        foreach ($lines as $line) {
-            $x = trim($line);
-            if ($x) echo '<li>'. $x .'</li>';
+    
+        // Récupérer et sécuriser les champs
+        $nom_service = trim($_POST['nom_service']);
+        $date_debut = $_POST['date_debut'];
+        $date_fin = $_POST['date_fin'];
+        $jours = $_POST['jours'] ?? [];
+        $exceptions = trim($_POST['exception_service']);
+    
+        // Vérifier que tous les champs nécessaires sont là
+        if (empty($nom_service) || empty($date_debut) || empty($date_fin)) {
+            die("Tous les champs doivent être remplis.");
         }
-    }
-
-    if (isset($post['jours'])) {
-        foreach ($post['jours'] as $jour) {
-            echo "Jour coché : $jour<br>";
+    
+        // Créer les colonnes booléennes pour chaque jour
+        $jours_sem = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+        $jours_valeurs = [];
+        foreach ($jours_sem as $jour) {
+            $jours_valeurs[$jour] = in_array($jour, $jours) ? 1 : 0;
         }
-    } else {
-        echo "Aucun jour n'a été coché.";
-    }
-    echo '</ul>';
-}
 
-//check which days are considered and which not
-function get_day_flags($jours) {
-    return [
-        'lundi' => in_array('Lundi', $jours) ? 1 : 0,
-        'mardi' => in_array('Mardi', $jours) ? 1 : 0,
-        'mercredi' => in_array('Mercredi', $jours) ? 1 : 0,
-        'jeudi' => in_array('Jeudi', $jours) ? 1 : 0,
-        'vendredi' => in_array('Vendredi', $jours) ? 1 : 0,
-        'samedi' => in_array('Samedi', $jours) ? 1 : 0,
-        'dimanche' => in_array('Dimanche', $jours) ? 1 : 0,
-    ];
-}
-
-//check if the dates are logic
-function validate_dates($date_debut, $date_fin) {
-    $valid = true;
-    $today = date("Y-m-d");
-
-    if($date_debut > $date_fin){
-        echo "La date de fin ne doit pas être avant la date de début <br>";
-        $valid = false;
-    }
-    if($date_debut < $today){
-        echo "La date de début du service ne peut pas être dans le passé ($today) <br>";
-
-    }
-    return $valid;
-}
-
-
-//parse data 
-function parse_exceptions($text) {
-    $lines = explode("\n", $text);
-    $parsed_exceptions = [];
-    $valid = true;
-
-    foreach ($lines as $line) {
-        $parts = explode(" ", trim($line));
-        if (count($parts) == 2) {
-            $date = $parts[0];
-            $type = strtoupper($parts[1]);
-            if ($type == "INCLUS") {
-                $parsed_exceptions[] = ['date' => $date, 'exception' => 1];
-            } elseif ($type == "EXCLUS") {
-                $parsed_exceptions[] = ['date' => $date, 'exception' => 2];
-            } else {
-                $valid = false;
+        $stmt = $db->query("SELECT MAX(ID) as max_id FROM SERVICE");
+        $row = $stmt->fetch();
+        $next_id = $row['max_id'] + 1;
+    
+        // Insérer dans SERVICE
+        $sql = "INSERT INTO SERVICE (ID, NOM, LUNDI, MARDI, MERCREDI, JEUDI, VENDREDI, SAMEDI, DIMANCHE, DATE_DEBUT, DATE_FIN)
+                VALUES (:id, :nom, :lu, :ma, :me, :je, :ve, :sa, :di, :debut, :fin)";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+            ':id' => $next_id,
+            ':nom' => $nom_service,
+            ':lu' => $jours_valeurs['Lundi'],
+            ':ma' => $jours_valeurs['Mardi'],
+            ':me' => $jours_valeurs['Mercredi'],
+            ':je' => $jours_valeurs['Jeudi'],
+            ':ve' => $jours_valeurs['Vendredi'],
+            ':sa' => $jours_valeurs['Samedi'],
+            ':di' => $jours_valeurs['Dimanche'],
+            ':debut' => $date_debut,
+            ':fin' => $date_fin
+        ]);
+    
+        // Traiter les exceptions si non vide
+        if (!empty($exceptions)) {
+            $lines = explode("\n", $exceptions);
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if (preg_match('/^(\d{4}-\d{2}-\d{2})\s+(INCLUS|EXCLUS)$/', $line, $matches)) {
+                    $date = $matches[1];
+                    $code = $matches[2];
+                    if($code == "INCLUS"){
+                        $nb_code = 1;
+                    }
+                    elseif($code == "EXCLUS"){
+                        $nb_code = 2;
+                    }
+                    $stmt = $db->prepare("INSERT INTO EXCEPTION (SERVICE_ID, DATE, CODE) VALUES (:id, :date, :code)");
+                    $stmt->execute([
+                        ':id' => $next_id,
+                        ':date' => $date,
+                        ':code' => $nb_code
+                    ]);
+                } else {
+                    echo "Ligne d'exception ignorée (format invalide) : $line<br>";
+                }
             }
-        } else {
-            $valid = false;
         }
+        echo "Service ajouté avec succès.";
     }
-
-    return [$parsed_exceptions, $valid];
+    
 }
-
-//get the id of the last service
-function get_last_service_id($pdo) {
-    $sql = "SELECT MAX(ID) AS ID FROM SERVICE";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $row['ID'] ?? null;
-}
+?>

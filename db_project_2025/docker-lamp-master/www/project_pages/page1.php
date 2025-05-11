@@ -3,6 +3,7 @@
     <?php
     include '../db_connection.php';
     include '../functions/page1_functions.php';
+    $service = getAllService($pdo);
     ?>
     <head>
         <title>Page1</title>
@@ -18,25 +19,19 @@
             <li>
                 <form  method="get">
                     <label for="nom">Nom: </label>
-                    <input type="text" id="nom_ag" name="nom_agence" placeholder="Entré le nom de L'agence" required>
-                    <input type="submit" value="Submit">
-                </form>
-            </li>
-            <li>
-                <form  method="get">
+                        <input type="text" id="nom_ag" name="nom_agence" placeholder="Entré le nom de L'agence">
                     <label for="nom">Telephone: </label>
-                    <input type="text" id="tel_ag" name="tel_agence" placeholder="Entré le numéro de téléphone de L'agence" required>
+                        <input type="text" id="tel_ag" name="tel_agence" placeholder="Entré le numéro de téléphone de L'agence">
                     <input type="submit" value="Submit">
                 </form>
             </li>
+
         </div>
 
         <div id = 'message'>
             <?php
-                if (isset($_GET['nom_agence'])) {
-                    getDataAgence($pdo, 'nom_agence', 'AGENCE.NOM');
-                } elseif (isset($_GET['tel_agence'])){
-                    getDataAgence($pdo, 'tel_agence', 'TELEPHONE');
+                if(isset($_GET['nom_agence']) || isset($_GET['tel_agence'])){
+                    getAgenceSearch($pdo);
                 }
             ?>
         </div>
@@ -46,47 +41,22 @@
             <li> 
                 <form method="get">
                     <label for="nom">Nom arret: </label>
-                    <input type="text" id="nom_ar" name="nom_arret" placeholder="Nom de l'arrêt" required> 
-                    <input type="submit" value="Submit">
-                </form>
-            </li>
-
-            <li> 
-                <form method="get">
+                        <input type="text" id="nom_ar" name="nom_arret" placeholder="Nom de l'arrêt">
                     <label for="nom">Nom Itinéraire: </label>
-                    <input type="text" id="nom_traj" name="nom_itineraire" placeholder="Nom de l'itineraire" required> 
-                    <input type="submit" value="Submit">
-                </form>
-            </li>
-
-            <li> 
-                <form method="get">
+                        <input type="text" id="nom_traj" name="nom_itineraire" placeholder="Nom de l'itineraire">
                     <label for="nom">Heure d'arrivé: </label>
-                    <input type="time" id="h_ariv" name="heure_arrive" placeholder="Heure d'arrivé" required> 
-                    <input type="submit" value="Submit">
-                </form>
-            </li>
-
-            <li> 
-                <form method="get">
+                        <input type="time" id="h_ariv" name="heure_arrive" placeholder="Heure d'arrivé">
                     <label for="nom">Heure de départ: </label>
-                    <input type="time" id="h_dep" name="heure_depart" placeholder="Heure de départ" required> 
+                        <input type="time" id="h_dep" name="heure_depart" placeholder="Heure de départ"> 
                     <input type="submit" value="Submit">
                 </form>
             </li>
-            
         </div>
 
         <div id='message'>
             <?php
-            if (isset($_GET['nom_arret'])) {
-                    getDataHoraire($pdo, 'nom_arret', 'ARRET.NOM');
-                } elseif (isset($_GET['nom_itineraire'])) {
-                    getDataHoraire($pdo, 'nom_itineraire', 'ITINERAIRE.NOM');
-                } elseif (isset($_GET['heure_arrive'])){
-                    getDataHoraireHeure($pdo, 'heure_arrive', 'HEURE_ARRIVEE');
-                } elseif (isset($_GET['heure_depart'])){
-                    getDataHoraireHeure($pdo, 'heure_depart', 'HEURE_DEPART');
+            if (isset($_GET['nom_arret']) || isset($_GET['nom_itineraire']) || isset($_GET['heure_arrive']) || isset($_GET['heure_depart'])) {
+                    getHoraireSearch($pdo);
                 }
             ?>
         </div>
@@ -96,47 +66,25 @@
             <li> 
                 <form method="get">
                     <label for="nom">Nom de l'itiniéraire: </label>
-                    <input type="text" id="it_ser" name="itineraire_exception" placeholder="Nom de l'itinéraire" required>
-                    <input type="submit" value="Submit">
-                </form>
-            </li>
-
-            
-
-            <li> 
-                <form method="get">
+                        <input type="text" id="it_ser" name="itineraire_exception" placeholder="Nom de l'itinéraire">
                     <label for="nom">Nom du service: </label>
-                    <input type="text" id="ex_ser" name="service_exception" placeholder="Nom du service" required>
-                    <input type="submit" value="Submit">
-                </form>
-            </li>
-
-            <li> 
-                <form method="get">
-                    <label for="nom">Date de début de l'exception: </label>
-                    <input type="date" id="da_ser" name="date_exception_debut" placeholder="Date de début d'exception" required>
-                    <input type="submit" value="Submit">
-                </form>
-            </li>
-
-            <li> 
-                <form method="get">
-                    <label for="nom">Date de fin de l'exception: </label>
-                    <input type="date" id="da_ser" name="date_exception_fin" placeholder="Date de fin d'exception" required>
+                    <select name="service_exception">
+                        <option value="">-- Choisir -- </option>
+                        <?php foreach ($service as $i):?>
+                            <option value="<?= $i['NOM']?>"><?= htmlspecialchars($i['NOM']) ?></option>
+                        <?php endforeach;?>
+                    </select>
+                        <!-- <input type="text" id="ex_ser" name="service_exception" placeholder="Nom du service"> -->
+                    <label for="nom">Date de l'exception: </label>
+                        <input type="date" id="da_ser" name="date_exception" placeholder="Date de l'exception">
                     <input type="submit" value="Submit">
                 </form>
             </li>
         </div>
         <div id='message'>
         <?php
-            if(isset($_GET['itineraire_exception'])){
-                getDataException($pdo, 'itineraire_exception', 'ITINERAIRE.NOM');
-            } elseif (isset($_GET['service_exception'])){
-                getDataException($pdo, 'service_exception', 'SERVICE.NOM');
-            } elseif (isset($_GET['date_exception_debut'])){
-                getDataExceptionDate($pdo, 'date_exception_debut', 'DATE_DEBUT');
-            } elseif(isset($_GET['date_exception_fin'])){
-                getDataExceptionDate($pdo, 'date_exception_fin', 'DATE_FIN');
+            if(isset($_GET['itineraire_exception']) || isset($_GET['service_exception']) || isset($_GET['date_exception'])){
+                getExceptionSearch($pdo);
             }
         ?>
         </div>
