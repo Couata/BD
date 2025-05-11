@@ -40,8 +40,6 @@
     <?php $i++;
     endforeach; 
     ?>
-</table>
-
-        <!-- Insertion de code PHP -->
+    </table>
     </body>
 </html>

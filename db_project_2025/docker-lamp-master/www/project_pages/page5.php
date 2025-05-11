@@ -48,6 +48,6 @@
     <?php
     endforeach;}
     ?>
-</table>
+    </table>
     </body>
 </html>
