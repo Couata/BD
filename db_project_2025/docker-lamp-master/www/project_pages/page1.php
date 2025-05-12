@@ -53,7 +53,7 @@
             </li>
         </div>
 
-        <div id='message'>
+        <div>
             <?php
             if (isset($_GET['nom_arret']) || isset($_GET['nom_itineraire']) || isset($_GET['heure_arrive']) || isset($_GET['heure_depart'])) {
                     getHoraireSearch($pdo);
@@ -81,7 +81,7 @@
                 </form>
             </li>
         </div>
-        <div id='message'>
+        <div>
         <?php
             if(isset($_GET['itineraire_exception']) || isset($_GET['service_exception']) || isset($_GET['date_exception'])){
                 getExceptionSearch($pdo);

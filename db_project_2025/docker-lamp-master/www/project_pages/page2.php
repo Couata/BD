@@ -43,7 +43,7 @@
         //          affiche ce qu'on met
         // -----------------------------------------------------
 
-        echo "<div id='message'>Votre nouveau Service <ul>";
+        echo "<div>Votre nouveau Service <ul>";
         if(isset($_POST['nom_service'])){
             $nom = $_POST['nom_service'];
             echo "$nom <br>";
